@@ -25,6 +25,10 @@ class EventParser
         $this->setLanguage($language);
     }
 
+    /**
+     * Download events data from backendServer in json format
+     * @return mixed
+     */
     private function getEventsJson()
     {
         $ch = curl_init();
