@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class EventParser
+ * @author Krzysztof Wędrowicz
+ */
 class EventParser
 {
     private $raw_array = [];
@@ -7,10 +11,11 @@ class EventParser
     private $supportedLanguages = ['en_US', 'pl_PL'];
     private $host;
 
-    public function __construct($host)
+    public function __construct($host, $language)
     {
         $this->host = $host;
         $this->raw_array = json_decode($this->getEventsJson(), true);
+        $this->setLanguage($language);
     }
 
     private function getEventsJson()
@@ -22,8 +27,14 @@ class EventParser
         $server_output = curl_exec($ch);
         return $server_output;
     }
-    
-    public function setLanguage($language){
+
+    /**
+     * Set default language and trim other translations
+     * @param $language
+     *
+     * @throws Exception
+     */
+    private function setLanguage($language){
         if(!in_array($language, $this->supportedLanguages))
             throw new Exception("Language '$language' is not supported");
         $this->events = $this->raw_array;
@@ -42,11 +53,11 @@ class EventParser
         }
     }
 
+    /**
+     * Get array of
+     * @return array
+     */
     public function getEvents(){
-        /*$array = [];
-        foreach($this->events as $event){
-            if($event['archetype'] == '')
-        }*/
         return $this->events;
     }
 
@@ -62,6 +73,12 @@ class EventParser
         return $cities;
     }
 
+    /**
+     * Get name of all events
+     * @param $event
+     *
+     * @return mixed
+     */
     public function getCity($event){
         foreach ($event['categories'] as $category) {
             if($category['parent']['code'] == 'city')
@@ -69,6 +86,10 @@ class EventParser
         }
     }
 
+    /**
+     * Get associative array of all trainers assigned to any event
+     * @return array
+     */
     public function getTrainers(){
         $trainers = [];
         foreach ($this->events as $event)
@@ -80,7 +101,11 @@ class EventParser
         }
         return $trainers;
     }
-    
+
+    /**
+     * Get associative array of all event type assigned to any event
+     * @return array
+     */
     public function getEventTypes(){
         $types = [];
         foreach ($this->events as $event)
@@ -93,6 +118,10 @@ class EventParser
         return $types;
     }
 
+    /**
+     * Get associative array of all event groups assigned to any event
+     * @return array
+     */
     public function getEventGroups(){
         $groups = [];
         foreach ($this->events as $event)
@@ -105,6 +134,10 @@ class EventParser
         return $groups;
     }
 
+    /**
+     * Get array of dates when events take place
+     * @return array
+     */
     public function getEventDates(){
         $dates = [];
         foreach ($this->events as $event)
@@ -114,10 +147,22 @@ class EventParser
         return array_values(array_unique($dates));
     }
 
+    /**
+     * Get date of an event
+     * @param $event
+     *
+     * @return string
+     */
     public function getDate($event){
         return substr($event['available_until'],0,10);
     }
 
+    /**
+     * Get all events from particular date
+     * @param $date
+     *
+     * @return array
+     */
     public function getByDate($date){
         $events = [];
         foreach ($this->events as $event)
@@ -128,6 +173,13 @@ class EventParser
         return $events;
     }
 
+    /**
+     * Universal method for getting all events matching category id (category is city, event type,
+     * group, trainer)
+     * @param $category_id
+     *
+     * @return array
+     */
     public function getByCategory($category_id){
         $events_array = [];
         foreach ($this->events as $event)

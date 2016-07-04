@@ -23,8 +23,7 @@ function events_shortcode( $atts ) {
 
 
 	$shost = get_option('eventparser_shost');
-	$parser = new EventParser($shost);
-	$parser->setLanguage('pl_PL');
+	$parser = new EventParser($shost, 'pl_PL');
 
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
 	$output .= "<form id='target' action=\"{$shost}/mycart/add\" enctype='text/plain'>";
