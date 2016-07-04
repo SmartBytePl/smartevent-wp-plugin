@@ -11,6 +11,13 @@ class EventParser
     private $supportedLanguages = ['en_US', 'pl_PL'];
     private $host;
 
+    /**
+     * EventParser constructor.
+     * Takes two parameters. First is the host address of SmartEvent backend server.
+     * The second one is one of supported language.
+     * @param $host
+     * @param $language
+     */
     public function __construct($host, $language)
     {
         $this->host = $host;
@@ -54,23 +61,19 @@ class EventParser
     }
 
     /**
-     * Get array of
+     * Get array of all events
      * @return array
      */
     public function getEvents(){
         return $this->events;
     }
 
+    /**
+     * Get associative array of all cities assigned to any event
+     * @return array
+     */
     public function getCities(){
-        $cities = [];
-        foreach ($this->events as $event)
-        {
-            foreach ($event['categories'] as $category) {
-                if($category['parent']['code'] == 'city')
-                    $cities[$category['id']] = $category['name'];
-            }
-        }
-        return $cities;
+        return $this->matchCategoryItems('city');
     }
 
     /**
@@ -91,15 +94,7 @@ class EventParser
      * @return array
      */
     public function getTrainers(){
-        $trainers = [];
-        foreach ($this->events as $event)
-        {
-            foreach ($event['categories'] as $category) {
-                if($category['parent']['code'] == 'coach')
-                    $trainers[$category['id']] = $category['name'];
-            }
-        }
-        return $trainers;
+        return $this->matchCategoryItems('coach');
     }
 
     /**
@@ -107,15 +102,7 @@ class EventParser
      * @return array
      */
     public function getEventTypes(){
-        $types = [];
-        foreach ($this->events as $event)
-        {
-            foreach ($event['categories'] as $category) {
-                if($category['parent']['code'] == 'event_type')
-                    $types[$category['id']] = $category['name'];
-            }
-        }
-        return $types;
+        return $this->matchCategoryItems('event_type');
     }
 
     /**
@@ -123,15 +110,7 @@ class EventParser
      * @return array
      */
     public function getEventGroups(){
-        $groups = [];
-        foreach ($this->events as $event)
-        {
-            foreach ($event['categories'] as $category) {
-                if($category['parent']['code'] == 'event_group')
-                    $groups[$category['id']] = $category['name'];
-            }
-        }
-        return $groups;
+        return $this->matchCategoryItems('event_group');
     }
 
     /**
@@ -192,5 +171,23 @@ class EventParser
             }
         }
         return $events_array;
+    }
+
+    /**
+     * Return all items matching parent category code
+     * @param $parent_code
+     *
+     * @return array
+     */
+    private function matchCategoryItems($parent_code){
+        $items = [];
+        foreach ($this->events as $event)
+        {
+            foreach ($event['categories'] as $category) {
+                if($category['parent']['code'] == $parent_code)
+                    $items[$category['id']] = $category['name'];
+            }
+        }
+        return $items;
     }
 }
