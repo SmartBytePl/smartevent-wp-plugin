@@ -18,3 +18,7 @@ input[type=number]{
     width: 50px;
     border-radius: 5px;
 }
+
+.errors{
+    color: red;
+}

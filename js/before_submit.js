@@ -28,5 +28,10 @@ jQuery( "#target" ).submit(function() {
             }
         }
     });
+    jQuery('<input>', {
+        type: 'hidden',
+        name: 'invite',
+        value: Cookies.get('invite')
+    }).appendTo('#target');
     return true;
 });
