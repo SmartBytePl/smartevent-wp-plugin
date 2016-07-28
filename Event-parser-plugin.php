@@ -35,7 +35,7 @@ function events_shortcode( $atts ) {
 
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
 	$output .= "<form id='target' action=\"{$shost}/mycart/add\" enctype='text/plain'>";
-	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Cena</th><th>Ilość</th></tr>";
+	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th></tr>";
 	foreach($events as $event)
 	{
 		/*$output .= "<div class='event'><input type=\"checkbox\" id=\"checkbox{$event['id']}\" name=\"id[]\" value=\"{$event['id']}\" class='event_checkbox'><strong>{$event['name']} (".$parser->getCity($event).",".$parser->getDate($event).")</strong> ";
@@ -46,6 +46,7 @@ function events_shortcode( $atts ) {
 		$output .= "<tr><td><input type=\"checkbox\" id=\"checkbox{$event['id']}\" name=\"id[]\" value=\"{$event['id']}\" class='event_checkbox'>{$event['name']}</strong></td>";
 		$output .= "<td>{$parser->getCity($event)}</td>";
 		$output .= "<td>{$parser->getDate($event)}</td>";
+		$output .= "<td>{$event['on_hand']}</td>";
 		$price = $event['price']/100;
 		$output .= "<td>$price PLN</td>";
 		$output .= "<td><input type=\"number\" id=\"quantity{$event['id']}\" data-eventid='{$event['id']}'></td></tr>";
