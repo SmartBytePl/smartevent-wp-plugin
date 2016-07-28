@@ -15,20 +15,28 @@ function events_shortcode( $atts ) {
 
 	$output = '';
 
-	/*$pull_quote_atts = shortcode_atts( array(
-		'quote' => 'My Quote',
-		'attribution' => 'Author',
-	), $atts );*/
+	$params = shortcode_atts( array(
+		'city' => null
+	), $atts );
 
 
 
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
+	if($params['city']){
+		$key = array_search($params['city'], $parser->getCities());
+		$events = $parser->getByCategory($key);
+	}
+	else{
+		$events = $parser->getEvents();
+	}
+	usort($events, "cmp");
+
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
 	$output .= "<form id='target' action=\"{$shost}/mycart/add\" enctype='text/plain'>";
 	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Cena</th><th>Ilość</th></tr>";
-	foreach($parser->getEvents() as $event)
+	foreach($events as $event)
 	{
 		/*$output .= "<div class='event'><input type=\"checkbox\" id=\"checkbox{$event['id']}\" name=\"id[]\" value=\"{$event['id']}\" class='event_checkbox'><strong>{$event['name']} (".$parser->getCity($event).",".$parser->getDate($event).")</strong> ";
 		$output .= "Ilość: <input type=\"number\" id=\"quantity{$event['id']}\" data-eventid='{$event['id']}'><br/>";
@@ -82,6 +90,11 @@ add_action('admin_menu', 'eventparser_admin_actions');
 function wpdocs_theme_name_scripts() {
 	wp_enqueue_style( 'eventparser_main', plugin_dir_url( __FILE__ ).'css/eventparser_main.css');
 	//wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
+}
+
+function cmp($a, $b)
+{
+	return $a['available_until'] < $b['available_until'];
 }
 
 add_action( 'wp_enqueue_scripts', 'wpdocs_theme_name_scripts' );
