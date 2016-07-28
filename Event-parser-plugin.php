@@ -41,9 +41,10 @@ function events_shortcode( $atts ) {
 	foreach($keys as $key)
 		if($key > 0) $array[] = $key;
 
-	$events = $parser->getByCategories($array);
-
-	//$events = $parser->getEvents();
+	if(count($array) > 0)
+		$events = $parser->getByCategories($array);
+	else
+		$events = $parser->getEvents();
 	usort($events, "cmp");
 
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
