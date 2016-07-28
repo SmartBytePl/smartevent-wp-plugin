@@ -177,6 +177,22 @@ class EventParser
         return $events_array;
     }
 
+    public function getByCategories($array)
+    {
+    	$events_array = [];
+	    foreach ($this->events as $event)
+	    {
+	    	$counter = 0;
+	    	foreach($event['categories'] as $category){
+	    		if(in_array($category['id'], $array))
+	    			$counter++;
+		    }
+		    if($counter == count($array))
+		    	$events_array[] = $event;
+	    }
+	    return $events_array;
+    }
+
     /**
      * Return all items matching parent category code
      * @param $parent_code

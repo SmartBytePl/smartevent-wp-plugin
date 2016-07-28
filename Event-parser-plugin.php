@@ -16,7 +16,10 @@ function events_shortcode( $atts ) {
 	$output = '';
 
 	$params = shortcode_atts( array(
-		'city' => null
+		'city' => null,
+		'coach' => null,
+		'type' => null,
+		'group' => null
 	), $atts );
 
 
@@ -24,18 +27,28 @@ function events_shortcode( $atts ) {
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	if($params['city']){
-		$key = array_search($params['city'], $parser->getCities());
-		$events = $parser->getByCategory($key);
-	}
-	else{
-		$events = $parser->getEvents();
-	}
+	$keys = [];
+	if($params['city'])
+		$keys[] = array_search( $params['city'], $parser->getCities() );
+	if($params['coach'])
+		$keys[] = array_search($params['coach'], $parser->getTrainers());
+	if($params['type'])
+		$keys[] = array_search($params['type'], $parser->getEventTypes());
+	if($params['group'])
+		$keys[] = array_search($params['group'], $parser->getEventGroups());
+
+	$array = [];
+	foreach($keys as $key)
+		if($key > 0) $array[] = $key;
+
+	$events = $parser->getByCategories($array);
+
+	//$events = $parser->getEvents();
 	usort($events, "cmp");
 
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
 	$output .= "<form id='target' action=\"{$shost}/mycart/add\" enctype='text/plain'>";
-	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th></tr>";
+	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th><th></th></tr>";
 	foreach($events as $event)
 	{
 		/*$output .= "<div class='event'><input type=\"checkbox\" id=\"checkbox{$event['id']}\" name=\"id[]\" value=\"{$event['id']}\" class='event_checkbox'><strong>{$event['name']} (".$parser->getCity($event).",".$parser->getDate($event).")</strong> ";
@@ -50,6 +63,10 @@ function events_shortcode( $atts ) {
 		$price = $event['price']/100;
 		$output .= "<td>$price PLN</td>";
 		$output .= "<td><input type=\"number\" id=\"quantity{$event['id']}\" data-eventid='{$event['id']}'></td></tr>";
+		$output .= "<td>";
+		if($event['url'])
+			$output .= "<a href=\"{$event['url']}\">Więcej</a>";
+		$output .= "</td>";
 	}
 	$output .= "</table>";
 	$output .= "<h2>Kupon</h2>";
