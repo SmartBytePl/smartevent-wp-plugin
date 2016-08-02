@@ -138,6 +138,23 @@ class EventParser
      */
     public function getDate($event){
         return substr($event['available_until'],0,10);
+	    /*$date = substr($event['available_until'],0,10);
+	    $date = str_replace('.', '-', $date);
+	    $months = array(
+	        'styczeń' => 'stycznia',
+		    'luty' => 'luty',
+		    'marzec' => 'marca',
+		    'kwiecień' => 'kwietnia',
+		    'maj' => 'maja',
+		    'czerwiec' => 'czerwca',
+		    'lipiec' => 'lipca',
+		    'sierpień' => 'sierpnia',
+		    'wrzesień' => 'września',
+		    'październik' => 'października',
+		    'listopad' => 'listopada',
+		    'grudzień' => 'grudnia'
+	    );
+	    return strftime("%d", strtotime($date)).' '.$months[strftime("%B", strtotime($date))].' '.strftime("%A", strtotime($date));*/
     }
 
     /**
