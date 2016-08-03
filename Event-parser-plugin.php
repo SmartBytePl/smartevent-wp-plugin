@@ -61,12 +61,55 @@ function events_shortcode( $atts ) {
 
 }
 
-function template($name, $shost, $events)
-{
+function event_date_shortcode( $atts ) {
 
+	$output = '';
+
+	$params = shortcode_atts( array(
+		'city' => null,
+		'coach' => null,
+		'type' => null,
+		'group' => null,
+		'sort' => 'asc',
+
+	), $atts );
+
+
+
+	$shost = get_option('eventparser_shost');
+	$parser = new EventParser($shost, 'pl_PL');
+
+	$keys = [];
+	if($params['city'])
+		$keys[] = array_search( $params['city'], $parser->getCities() );
+	if($params['coach'])
+		$keys[] = array_search($params['coach'], $parser->getTrainers());
+	if($params['type'])
+		$keys[] = array_search($params['type'], $parser->getEventTypes());
+	if($params['group'])
+		$keys[] = array_search($params['group'], $parser->getEventGroups());
+
+	$array = [];
+	foreach($keys as $key)
+		if($key > 0) $array[] = $key;
+
+	if(count($array) > 0)
+		$events = $parser->getByCategories($array);
+	else
+		$events = $parser->getEvents();
+	if($params['sort'] == 'asc')
+		usort($events, "cmp");
+	else
+		usort($events, "rcmp");
+
+	if(count($events) < 1)
+		return "";
+	else
+		return $parser->getDate($events[0]);
 }
 
 add_shortcode( 'events', 'events_shortcode' );
+add_shortcode( 'event-date', 'event_date_shortcode');
 
 function eventparser_admin() {
 	include('eventparser_import_admin.php');
@@ -86,6 +129,11 @@ function wpdocs_theme_name_scripts() {
 function cmp($a, $b)
 {
 	return $a['available_until'] < $b['available_until'];
+}
+
+function rcmp($a, $b)
+{
+	return $a['available_until'] > $b['available_until'];
 }
 
 add_action( 'wp_enqueue_scripts', 'wpdocs_theme_name_scripts' );
