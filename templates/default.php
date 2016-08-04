@@ -39,4 +39,3 @@ $output .= "<form id=\"{$params['id']}\" action=\"{$shost}/mycart/add\" enctype=
 	$output .= "<input type=\"submit\" id=\"submit_button\" value=\"Zarejestruj się i zapłać\" class='et_pb_button  et_pb_button_0 et_pb_module et_pb_bg_layout_light'>";
 	$output .= "</form>";
 
-?>
