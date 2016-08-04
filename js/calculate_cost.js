@@ -1,9 +1,10 @@
-jQuery(function () {
+function calculate_cost(form_id) {
+    form_id = '#'+form_id;
     jQuery("input[type=checkbox], input[type=number], #coupon").on("change", function () {
       var url = "";
-      jQuery('input[type=checkbox]').each(function () {
+      jQuery(form_id+' input[type=checkbox]').each(function () {
          if (this.checked) {
-             var quantity = jQuery('#quantity'+this.value).val();
+             var quantity = jQuery(form_id+' #quantity'+this.value).val();
              if(url)
                 url += '&';
              else
@@ -11,7 +12,7 @@ jQuery(function () {
              url = url + 'id[]='+this.value+'&quantity[]='+quantity;
          }
       });
-      var coupon = jQuery('#coupon').val();
+      var coupon = jQuery(form_id+' #coupon').val();
         if(coupon)
         {
             if(url)
@@ -26,11 +27,11 @@ jQuery(function () {
            dataType: 'jsonp',
            success: function( result ) {
                result /= 100;
-               jQuery('#invoice_cost').html(result);
+               jQuery(form_id+' #invoice_cost').html(result);
            },
            error: function (request, error) {
                console.log(" Can't do because: " + error);
            }
        });
     });
-});
+}

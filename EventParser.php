@@ -130,6 +130,22 @@ class EventParser
         return array_values(array_unique($dates));
     }
 
+    public function getFirstAndLastDate(DateTime $date)
+    {
+    	$year_month = $date->format('Y-m');
+	    $dates = $this->getEventDates();
+	    $passed = [];
+	    foreach($dates as $d)
+	    {
+	    	if(substr($d,0,7) == $year_month)
+	    		$passed[] = $d;
+	    }
+	    sort($passed);
+	    $first = count($passed) > 0 ? $passed[0] : null;
+	    $last = count($passed) > 0 ? $passed[count($passed) - 1] : null;
+	    return [$first, $last];
+    }
+
     /**
      * Get date of an event
      * @param $event
@@ -138,23 +154,6 @@ class EventParser
      */
     public function getDate($event){
         return substr($event['available_until'],0,10);
-	    /*$date = substr($event['available_until'],0,10);
-	    $date = str_replace('.', '-', $date);
-	    $months = array(
-	        'styczeń' => 'stycznia',
-		    'luty' => 'luty',
-		    'marzec' => 'marca',
-		    'kwiecień' => 'kwietnia',
-		    'maj' => 'maja',
-		    'czerwiec' => 'czerwca',
-		    'lipiec' => 'lipca',
-		    'sierpień' => 'sierpnia',
-		    'wrzesień' => 'września',
-		    'październik' => 'października',
-		    'listopad' => 'listopada',
-		    'grudzień' => 'grudnia'
-	    );
-	    return strftime("%d", strtotime($date)).' '.$months[strftime("%B", strtotime($date))].' '.strftime("%A", strtotime($date));*/
     }
 
     /**

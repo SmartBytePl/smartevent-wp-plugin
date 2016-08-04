@@ -1,7 +1,7 @@
 <?php
 
 $output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
-$output .= "<form id='target' action=\"{$shost}/mycart/add\" enctype='text/plain'>";
+$output .= "<form id=\"{$params['id']}\" action=\"{$shost}/mycart/add\" enctype='text/plain'>";
 	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th><th></th></tr>";
 		foreach($events as $event)
 		{

@@ -20,7 +20,9 @@ function events_shortcode( $atts ) {
 		'coach' => null,
 		'type' => null,
 		'group' => null,
-		'template' => 'default'
+		'template' => 'default',
+		'id' => 'form1',
+		'sort' => 'asc'
 	), $atts );
 
 
@@ -44,19 +46,23 @@ function events_shortcode( $atts ) {
 
 	if(count($array) > 0)
 		$events = $parser->getByCategories($array);
+	else if($params['city'] || $params['coach'] || $params['type'] || $params['group'])
+		$events = [];
 	else
 		$events = $parser->getEvents();
-	usort($events, "cmp");
+	if($params['sort'] == 'asc')
+		usort($events, "cmp");
+	else
+		usort($events, "rcmp");
 
 	include("templates/{$params['template']}.php");
 
-	$output .= "<script>window.backend_host =\"".$shost."\";</script>";
-	$output .= '<script src="'.plugin_dir_url( __FILE__ ).'js/js.cookie.js"></script>';
-	$output .= '<script src="'.plugin_dir_url( __FILE__ ).'js/invite_cookie.js"></script>';
-	$output .= '<script src="'.plugin_dir_url( __FILE__ ).'js/before_submit.js"></script>';
-	$output .= '<script src="'.plugin_dir_url( __FILE__ ).'js/quantity_change.js"></script>';
-	$output .= '<script src="'.plugin_dir_url( __FILE__ ).'js/calculate_cost.js"></script>';
-	$output .= '<script src="'.plugin_dir_url( __FILE__ ).'js/coupon_result.js"></script>';
+	$output .= "<script>
+					window.backend_host =\"".$shost."\";
+					quantity_change('".$params['id']."');
+					calculate_cost('".$params['id']."');
+					before_submit('".$params['id']."');
+				</script>";
 	return $output;
 
 }
@@ -123,7 +129,11 @@ add_action('admin_menu', 'eventparser_admin_actions');
 
 function wpdocs_theme_name_scripts() {
 	wp_enqueue_style( 'eventparser_main', plugin_dir_url( __FILE__ ).'css/eventparser_main.css');
-	//wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
+	wp_enqueue_script( 'before_submit', plugin_dir_url( __FILE__ ). '/js/before_submit.js');
+	wp_enqueue_script( 'quantity_change', plugin_dir_url( __FILE__ ). '/js/quantity_change.js');
+	wp_enqueue_script( 'calculate_cost', plugin_dir_url( __FILE__ ). '/js/calculate_cost.js');
+	wp_enqueue_script( 'coupon_result', plugin_dir_url( __FILE__ ). '/js/coupon_result.js');
+	wp_enqueue_script( 'js.cookie', plugin_dir_url( __FILE__ ). '/js/js.cookie.js');
 }
 
 function cmp($a, $b)
