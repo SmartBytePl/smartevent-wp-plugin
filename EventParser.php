@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Event.php';
+
 /**
  * Class EventParser
  * @author Krzysztof Wędrowicz
@@ -7,7 +9,8 @@
 class EventParser
 {
     private $raw_array = [];
-    private $events = [];
+    private $events_array = [];
+	private $events = [];
     private $supportedLanguages = ['en_US', 'pl_PL'];
     private $host;
 
@@ -48,20 +51,24 @@ class EventParser
     private function setLanguage($language){
         if(!in_array($language, $this->supportedLanguages))
             throw new Exception("Language '$language' is not supported");
-        $this->events = $this->raw_array;
-        for($i = 0; $i < count($this->events); $i++){
-            for ($j = 0; $j < count($this->events[$i]['categories']); $j++){
-                $this->events[$i]['categories'][$j]['name'] = $this->events[$i]['categories'][$j]['translations'][$language];
-                unset($this->events[$i]['categories'][$j]['translations']);
-                $this->events[$i]['categories'][$j]['parent']['name'] = $this->events[$i]['categories'][$j]['parent']['translations'][$language];
-                unset($this->events[$i]['categories'][$j]['parent']['translations']);
-            }
+        $this->events_array = $this->raw_array;
+        for($i = 0; $i < count($this->events_array); $i++){
+        	if(array_key_exists("categories", $this->events_array[$i])){
+		        for ($j = 0; $j < count($this->events_array[$i]['categories']); $j++){
+			        $this->events_array[$i]['categories'][$j]['name'] = $this->events_array[$i]['categories'][$j]['translations'][$language];
+			        unset($this->events_array[$i]['categories'][$j]['translations']);
+			        $this->events_array[$i]['categories'][$j]['parent']['name'] = $this->events_array[$i]['categories'][$j]['parent']['translations'][$language];
+			        unset($this->events_array[$i]['categories'][$j]['parent']['translations']);
+		        }
+	        }
             $translations_params = ['name', 'description'];
             foreach ($translations_params as $param){
-                $this->events[$i][$param] = $this->events[$i]['translations'][$language][$param];
+                $this->events_array[$i][$param] = $this->events_array[$i]['translations'][$language][$param];
             }
-            unset($this->events[$i]['translations']);
+            unset($this->events_array[$i]['translations']);
         }
+        foreach($this->events_array as $event)
+        	$this->events[] = new Event($event);
     }
 
     /**
@@ -69,52 +76,7 @@ class EventParser
      * @return array
      */
     public function getEvents(){
-        return $this->events;
-    }
-
-    /**
-     * Get associative array of all cities assigned to any event
-     * @return array
-     */
-    public function getCities(){
-        return $this->matchCategoryItems('city');
-    }
-
-    /**
-     * Get name of all events
-     * @param $event
-     *
-     * @return mixed
-     */
-    public function getCity($event){
-        foreach ($event['categories'] as $category) {
-            if($category['parent']['code'] == 'city')
-                return $category['name'];
-        }
-    }
-
-    /**
-     * Get associative array of all trainers assigned to any event
-     * @return array
-     */
-    public function getTrainers(){
-        return $this->matchCategoryItems('coach');
-    }
-
-    /**
-     * Get associative array of all event type assigned to any event
-     * @return array
-     */
-    public function getEventTypes(){
-        return $this->matchCategoryItems('event_type');
-    }
-
-    /**
-     * Get associative array of all event groups assigned to any event
-     * @return array
-     */
-    public function getEventGroups(){
-        return $this->matchCategoryItems('event_group');
+    	return $this->events;
     }
 
     /**
@@ -123,9 +85,10 @@ class EventParser
      */
     public function getEventDates(){
         $dates = [];
+	    /* @var Event $event */
         foreach ($this->events as $event)
         {
-            $dates[] = substr($event['available_until'],0,10);
+            $dates[] = $event->getDate();
         }
         return array_values(array_unique($dates));
     }
@@ -147,83 +110,43 @@ class EventParser
     }
 
     /**
-     * Get date of an event
-     * @param $event
-     *
-     * @return string
-     */
-    public function getDate($event){
-        return substr($event['available_until'],0,10);
-    }
-
-    /**
      * Get all events from particular date
      * @param $date
      *
      * @return array
      */
-    public function getByDate($date){
+    public function findByDate($date){
         $events = [];
-        foreach ($this->events as $event)
+	    /* @var Event $event */
+	    foreach ($this->events as $event)
         {
-            if(substr($event['available_until'],0,10) == $date)
-                $events[] = $date;
+            if($event->getDate() == $date)
+                $events[] = $event;
         }
         return $events;
     }
 
-    /**
-     * Universal method for getting all events matching category id (category is city, event type,
-     * group, trainer)
-     * @param $category_id
-     *
-     * @return array
-     */
-    public function getByCategory($category_id){
-        $events_array = [];
+    public function findByCategoryName(array $categoryNames, $method){
+    	$events = [];
+	    /* @var Event $event */
         foreach ($this->events as $event)
         {
-            foreach ($event['categories'] as $category){
-                if($category['id'] == $category_id){
-                    $events_array[] = $event;
-                    break;
-                }
+        	$count = 0;
+        	/* @var Category $category */
+            foreach ($event->getCategories() as $category){
+                if(in_array($category->getName(), $categoryNames))
+                	$count++;
+            }
+            if($method == 'OR'){
+            	if($count > 0)
+            		$events[] = $event;
+            }
+            else{
+            	if($count == count($categoryNames))
+            		$events[] = $event;
             }
         }
-        return $events_array;
-    }
-
-    public function getByCategories($array)
-    {
-    	$events_array = [];
-	    foreach ($this->events as $event)
-	    {
-	    	$counter = 0;
-	    	foreach($event['categories'] as $category){
-	    		if(in_array($category['id'], $array))
-	    			$counter++;
-		    }
-		    if($counter == count($array))
-		    	$events_array[] = $event;
-	    }
-	    return $events_array;
-    }
-
-    /**
-     * Return all items matching parent category code
-     * @param $parent_code
-     *
-     * @return array
-     */
-    private function matchCategoryItems($parent_code){
-        $items = [];
-        foreach ($this->events as $event)
-        {
-            foreach ($event['categories'] as $category) {
-                if($category['parent']['code'] == $parent_code)
-                    $items[$category['id']] = $category['name'];
-            }
-        }
-        return $items;
+        $this->events = $events;
+        return $events;
     }
 }

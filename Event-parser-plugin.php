@@ -16,52 +16,38 @@ function events_shortcode( $atts ) {
 	$output = '';
 
 	$params = shortcode_atts( array(
-		'city' => null,
-		'coach' => null,
-		'type' => null,
-		'group' => null,
+		'categories' => null,
+		'method' => 'OR',
 		'template' => 'default',
 		'id' => 'form1',
-		'sort' => 'asc'
+		'sort' => 'ASC'
 	), $atts );
-
-
 
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$keys = [];
-	if($params['city'])
-		$keys[] = array_search( $params['city'], $parser->getCities() );
-	if($params['coach'])
-		$keys[] = array_search($params['coach'], $parser->getTrainers());
-	if($params['type'])
-		$keys[] = array_search($params['type'], $parser->getEventTypes());
-	if($params['group'])
-		$keys[] = array_search($params['group'], $parser->getEventGroups());
+	$categories_name_array = explode(',', $params['categories']);
 
-	$array = [];
-	foreach($keys as $key)
-		if($key > 0) $array[] = $key;
-
-	if(count($array) > 0)
-		$events = $parser->getByCategories($array);
-	else if($params['city'] || $params['coach'] || $params['type'] || $params['group'])
-		$events = [];
-	else
+	if($categories_name_array)
 		$events = $parser->getEvents();
-	if($params['sort'] == 'asc')
+	else
+		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
+
+	if($params['sort'] == 'ASC')
 		usort($events, "cmp");
 	else
 		usort($events, "rcmp");
+
 
 	include("templates/{$params['template']}.php");
 
 	$output .= "<script>
 					window.backend_host =\"".$shost."\";
-					quantity_change('".$params['id']."');
-					calculate_cost('".$params['id']."');
-					before_submit('".$params['id']."');
+					jQuery(function(){
+						quantity_change('".$params['id']."');
+						calculate_cost('".$params['id']."');
+						before_submit('".$params['id']."');
+					});
 				</script>";
 	return $output;
 
@@ -72,50 +58,57 @@ function event_date_shortcode( $atts ) {
 	$output = '';
 
 	$params = shortcode_atts( array(
-		'city' => null,
-		'coach' => null,
-		'type' => null,
-		'group' => null,
-		'sort' => 'asc',
-
+		'categories' => null,
+		'method' => 'OR',
+		'sort' => 'ASC'
 	), $atts );
-
-
 
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$keys = [];
-	if($params['city'])
-		$keys[] = array_search( $params['city'], $parser->getCities() );
-	if($params['coach'])
-		$keys[] = array_search($params['coach'], $parser->getTrainers());
-	if($params['type'])
-		$keys[] = array_search($params['type'], $parser->getEventTypes());
-	if($params['group'])
-		$keys[] = array_search($params['group'], $parser->getEventGroups());
+	$categories_name_array = explode(',', $params['categories']);
 
-	$array = [];
-	foreach($keys as $key)
-		if($key > 0) $array[] = $key;
-
-	if(count($array) > 0)
-		$events = $parser->getByCategories($array);
-	else
+	if($categories_name_array)
 		$events = $parser->getEvents();
-	if($params['sort'] == 'asc')
+	else
+		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
+
+	if($params['sort'] == 'ASC')
 		usort($events, "cmp");
 	else
 		usort($events, "rcmp");
 
 	if(count($events) < 1)
-		return "";
+		return null;
 	else
-		return $parser->getDate($events[0]);
+		return $events[0]->getDate();
 }
+
+function event_range_date_shortcode($atts){
+
+	$params = shortcode_atts( array(
+		'categories' => null,
+		'method' => 'OR',
+	), $atts );
+
+	$shost = get_option('eventparser_shost');
+	$parser = new EventParser($shost, 'pl_PL');
+
+	$categories_name_array = explode(',', $params['categories']);
+
+	if($categories_name_array)
+		$events = $parser->getEvents();
+	else
+		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
+
+	$parser->getFirstAndLastDate(new DateTime());
+}
+
+
 
 add_shortcode( 'events', 'events_shortcode' );
 add_shortcode( 'event-date', 'event_date_shortcode');
+add_shortcode( 'events-daterange', 'event_range_date_shortcode');
 
 function eventparser_admin() {
 	include('eventparser_import_admin.php');
@@ -136,14 +129,14 @@ function wpdocs_theme_name_scripts() {
 	wp_enqueue_script( 'js.cookie', plugin_dir_url( __FILE__ ). '/js/js.cookie.js');
 }
 
-function cmp($a, $b)
+function cmp(Event $a, Event $b)
 {
-	return $a['available_until'] < $b['available_until'];
+	return $a->getDate() < $b->getDate();
 }
 
-function rcmp($a, $b)
+function rcmp(Event $a, Event $b)
 {
-	return $a['available_until'] > $b['available_until'];
+	return $a->getDate() > $b->getDate();
 }
 
 add_action( 'wp_enqueue_scripts', 'wpdocs_theme_name_scripts' );
