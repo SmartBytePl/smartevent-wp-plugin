@@ -26,12 +26,16 @@ function events_shortcode( $atts ) {
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$categories_name_array = explode(',', $params['categories']);
+	$categories_name_array = array_filter(explode(',', $params['categories']));
 
-	if($categories_name_array)
-		$events = $parser->getEvents();
-	else
+
+	if(!empty($categories_name_array)){
 		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
+	}
+	else{
+		$events = $parser->getEvents();
+	}
+
 
 	if($params['sort'] == 'ASC')
 		usort($events, "cmp");
@@ -66,12 +70,15 @@ function event_date_shortcode( $atts ) {
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$categories_name_array = explode(',', $params['categories']);
+	$categories_name_array = array_filter(explode(',', $params['categories']));
 
-	if($categories_name_array)
-		$events = $parser->getEvents();
-	else
+
+	if(!empty($categories_name_array)){
 		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
+	}
+	else{
+		$events = $parser->getEvents();
+	}
 
 	if($params['sort'] == 'ASC')
 		usort($events, "cmp");
@@ -88,20 +95,24 @@ function event_range_date_shortcode($atts){
 
 	$params = shortcode_atts( array(
 		'categories' => null,
+		'which' => 'first',
 		'method' => 'OR',
 	), $atts );
 
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$categories_name_array = explode(',', $params['categories']);
+	$categories_name_array = array_filter(explode(',', $params['categories']));
 
-	if($categories_name_array)
-		$events = $parser->getEvents();
-	else
-		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
 
-	$parser->getFirstAndLastDate(new DateTime());
+	if(!empty($categories_name_array)){
+		$parser->findByCategoryName($categories_name_array, $params['method']);
+	}
+	else{
+		$parser->getEvents();
+	}
+
+	return $parser->getFirstAndLastDate(new DateTime(), $params['which']);
 }
 
 

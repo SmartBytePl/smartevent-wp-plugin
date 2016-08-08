@@ -93,7 +93,7 @@ class EventParser
         return array_values(array_unique($dates));
     }
 
-    public function getFirstAndLastDate(DateTime $date)
+    public function getFirstAndLastDate(DateTime $date, $which = 'first')
     {
     	$year_month = $date->format('Y-m');
 	    $dates = $this->getEventDates();
@@ -106,7 +106,10 @@ class EventParser
 	    sort($passed);
 	    $first = count($passed) > 0 ? $passed[0] : null;
 	    $last = count($passed) > 0 ? $passed[count($passed) - 1] : null;
-	    return [$first, $last];
+	    if($which == 'first')
+	    	return $first;
+	    else
+	    	return $last;
     }
 
     /**
