@@ -28,7 +28,7 @@ class Event
 		if(array_key_exists("categories", $event)){
 			/* @var Category $category */
 			foreach($event['categories'] as $category) {
-				$c = new Category($category['id'], $category['name'], $category['parent']['name']);
+				$c = new Category($category);
 				$this->categories[] = $c;
 			}
 		}
@@ -68,6 +68,16 @@ class Event
 
 	public function getAddress(){
 		return $this->address;
+	}
+
+	public function getCity(){
+		/* @var Category $category */
+		foreach($this->categories as $category){
+			if($category->getParentCode() == 'city'){
+				return $category->getName();
+			}
+		}
+		return null;
 	}
 
 	/**

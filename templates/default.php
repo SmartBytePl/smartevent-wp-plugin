@@ -7,11 +7,7 @@
 	foreach($events as $event)
 	{
 		$output .= "<tr><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
-		$output .= "<td>";
-		$categories = $event->getCategoriesByParentName('Miasto');
-		if(count($categories) > 0)
-			$output .= $categories[0]->getName();
-		$output .= "</td>";
+		$output .= "<td>{$event->getCity()}</td>";
 		$output .= "<td>{$event->getDate()}</td>";
 		$output .= "<td>{$event->getOnHand()}</td>";
 		$output .= "<td>{$event->getPrice()} PLN</td>";
