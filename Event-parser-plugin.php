@@ -150,4 +150,15 @@ function rcmp(Event $a, Event $b)
 	return $a->getDate() > $b->getDate();
 }
 
+function cityCmp(array $a, array $b)
+{
+	if(count($a) > 0 && count($b) > 0){
+		return $a[0]->getDate() < $b[0]->getDate();
+	}
+	elseif(!$a)
+		return false;
+	else
+		return true;
+}
+
 add_action( 'wp_enqueue_scripts', 'wpdocs_theme_name_scripts' );

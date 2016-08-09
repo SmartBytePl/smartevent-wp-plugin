@@ -46,6 +46,39 @@ class Event
 		return $this->date;
 	}
 
+	public function getDateText (){
+		$dzien = substr($this->date,8,2);
+		$dzien_tyg = substr($this->date,0,10);
+		$miesiac = substr($this->date,5,2);
+
+		$miesiac_pl = array(
+			'01' => 'stycznia',
+			'02' => 'luty',
+			'03' => 'marca',
+			'04' => 'kwietnia',
+			'05' => 'maja',
+			'06' => 'czerwca',
+			'07' => 'lipca',
+			'08' => 'sierpnia',
+			'09' => 'września',
+			'10' => 'października',
+			'11' => 'listopada',
+			'12' => 'grudnia'
+		);
+
+		$dzien_tyg_pl = array(
+			'Monday' => 'Poniedziałek',
+			'Tuesday' => 'Wtorek',
+			'Wednesday' => 'Środa',
+			'Thursday' => 'Czwartek',
+			'Friday' => 'Piątek',
+			'Saturday' => 'Sobota',
+			'Sunday' => 'Niedziela',
+		);
+
+		return '<span class="day">' . $dzien . '</span>' . '<span class="month">' . $miesiac_pl[$miesiac] . '</span>' . '<span class="day-num">'. $dzien_tyg_pl[strftime("%A", strtotime($dzien_tyg))] .'<span>';
+	}
+
 	public function getName(){
 		return $this->name;
 	}

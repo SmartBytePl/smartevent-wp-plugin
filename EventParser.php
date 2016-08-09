@@ -79,6 +79,15 @@ class EventParser
     	return $this->events;
     }
 
+    public function getCities(){
+    	$cities = [];
+	    /* @var Event $event */
+	    foreach($this->events as $event){
+	    	$cities[] = $event->getCity();
+	    }
+	    return array_unique($cities);
+    }
+
     /**
      * Get array of dates when events take place
      * @return array
