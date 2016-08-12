@@ -12,7 +12,7 @@ function quantity_change(form_id){
             jQuery(form_id+' #checkbox'+event_id).prop( "checked", false ).trigger("change");
     });
 
-    jQuery(form_id+" input[type=checkbox]").on("change", function(){
+    jQuery(form_id+" input[type=checkbox].event_checkbox").on("change", function(){
         if (jQuery(form_id+" input:checkbox.event_checkbox:checked").length > 0){
             jQuery(form_id+" #submit_button").attr("disabled", false);
             jQuery(form_id+" .errors").empty();
@@ -24,10 +24,21 @@ function quantity_change(form_id){
         }
         var quantityInput = jQuery(form_id+' #quantity'+this.value);
         var quantity = quantityInput.val();
-        if(this.checked && !(quantity > 0))
+        if(this.checked && !(quantity > 0)){
             quantityInput.val(1);
-        else if(!this.checked)
+            jQuery(this).parent().parent().after("<tr class='trainee'><td></td>"+
+                "<td><input type='text' name='name[]' placeholder='Imię'></td>"+
+                "<td><input type='text' name='surname[]' placeholder='Nazwisko'></td>"+
+                "<td><input type='text' name='phone[]' placeholder='Telefon'></td>"+
+                "<td><input type='text' name='email[]' placeholder='Email'></td><td></td><td></td></tr>");
+        }
+        else if(!this.checked){
             quantityInput.val(0);
+            var current = jQuery(this).parent().parent();
+            while(current.next().attr('class') == 'trainee'){
+                current.next().remove();
+            }
+        }
     });
 
     jQuery(form_id +" input[type=number]").on("change", function(){
