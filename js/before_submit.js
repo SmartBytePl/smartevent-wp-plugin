@@ -9,24 +9,6 @@ function before_submit(form_id) {
                     name: 'quantity[]',
                     value: quantity
                 }).appendTo(form_id);
-                for (var i = 0; i < quantity; i++) {
-                    jQuery('<input>', {
-                        type: 'hidden',
-                        name: 'name[]'
-                    }).appendTo(form_id);
-                    jQuery('<input>', {
-                        type: 'hidden',
-                        name: 'surname[]'
-                    }).appendTo(form_id);
-                    jQuery('<input>', {
-                        type: 'hidden',
-                        name: 'phone[]'
-                    }).appendTo(form_id);
-                    jQuery('<input>', {
-                        type: 'hidden',
-                        name: 'email[]'
-                    }).appendTo(form_id);
-                }
             }
         });
         jQuery('<input>', {

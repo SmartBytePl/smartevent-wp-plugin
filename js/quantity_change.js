@@ -29,4 +29,35 @@ function quantity_change(form_id){
         else if(!this.checked)
             quantityInput.val(0);
     });
+
+    jQuery(form_id +" input[type=number]").on("change", function(){
+
+        var count = 0;
+        var current = jQuery(this).parent().parent();
+        while(current.next().attr('class') == 'trainee'){
+            count += 1;
+            current = current.next();
+        }
+        console.log(count);
+
+        if(count < this.value){
+            for(var i = 0; i < this.value-count; i++)
+            {
+                current.after("<tr class='trainee'><td></td>"+
+                    "<td><input type='text' name='name[]' placeholder='Imię'></td>"+
+                    "<td><input type='text' name='surname[]' placeholder='Nazwisko'></td>"+
+                    "<td><input type='text' name='phone[]' placeholder='Telefon'></td>"+
+                    "<td><input type='text' name='email[]' placeholder='Email'></td><td></td><td></td></tr>");
+            }
+        }
+        else
+        {
+            for(i = 0; i < count-this.value; i++)
+            {
+                var toDelete = current;
+                current = current.prev();
+                toDelete.remove();
+            }
+        }
+    });
 }

@@ -6,16 +6,22 @@
 	/* @var Event $event */
 	foreach($events as $event)
 	{
-		$output .= "<tr><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
+		$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
 		$output .= "<td>{$event->getCity()}</td>";
 		$output .= "<td>{$event->getDate()}</td>";
 		$output .= "<td>{$event->getOnHand()}</td>";
 		$output .= "<td>{$event->getPrice()} PLN</td>";
-		$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td></tr>";
+		$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td>";
 		$output .= "<td>";
 		if($event->getUrl())
 			$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
-		$output .= "</td>";
+		$output .= "</td></tr>";
+		/*$output .= "<tr class='trainee'><td></td>
+					<td><input type='text' name='name[]' placeholder='Imię'></td>
+					<td><input type='text' name='surname[]' placeholder='Nazwisko'></td>
+					<td><input type='text' name='phone[]' placeholder='Telefon'></td>
+					<td><input type='text' name='email[]' placeholder='Email'></td><td></td><td></td></tr>";
+		*/
 	}
 	$output .= "</table>";
 	$output .= "<h2>Kupon</h2>";
