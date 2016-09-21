@@ -17,6 +17,25 @@
 	uasort($cityEvents, 'cityCmp');
 
 	foreach($cityEvents as $city => $events){
+		for($i = 0; $i < count($events); $i++)
+		{
+			$current_date = $events[$i]->getDate();
+			while($i < count($events) && $events[$i]->getDate() == $current_date)
+			{
+				$event = $events[$i];
+				$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
+				$output .= "<td>{$event->getCity()}</td>";
+				$output .= "<td>{$event->getDate()}</td>";
+				$output .= "<td>{$event->getOnHand()}</td>";
+				$output .= "<td>{$event->getPrice()} PLN</td>";
+				$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td>";
+				$output .= "<td>";
+				if($event->getUrl())
+					$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
+				$output .= "</td></tr>";
+				$i++;
+			}
+		}
 		foreach($events as $event)
 		{
 			$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
