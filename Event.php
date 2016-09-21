@@ -23,8 +23,8 @@ class Event
 		$this->description = $event['description'];
 		$this->price = $event['price']/100.0;
 		$this->onHand = $event['on_hand'];
-		$this->url = $event['url'];
-		$this->address = $event['address'];
+		$this->url = isset($event['url']) ? $event['url'] : null;
+		$this->address = isset($event['address']) ? $event['address'] : null;
 		if(array_key_exists("categories", $event)){
 			/* @var Category $category */
 			foreach($event['categories'] as $category) {

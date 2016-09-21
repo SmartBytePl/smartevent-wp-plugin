@@ -14,22 +14,27 @@
 	}
 	foreach($cities as $city)
 		usort($cityEvents[$event->getCity()], 'cmp');
-	usort($cityEvents, 'cityCmp');
+	uasort($cityEvents, 'cityCmp');
 
 
-	foreach($cities as $city){
-		foreach($cityEvents[$city] as $event)
+	foreach($cityEvents as $key => $value)
+	{
+		echo $key.PHP_EOL;
+	}
+
+	foreach($cityEvents as $city => $events){
+		foreach($events as $event)
 		{
-			$output .= "<tr><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
+			$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
 			$output .= "<td>{$event->getCity()}</td>";
 			$output .= "<td>{$event->getDate()}</td>";
 			$output .= "<td>{$event->getOnHand()}</td>";
 			$output .= "<td>{$event->getPrice()} PLN</td>";
-			$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td></tr>";
+			$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td>";
 			$output .= "<td>";
 			if($event->getUrl())
 				$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
-			$output .= "</td>";
+			$output .= "</td></tr>";
 		}
 	}
 	$output .= "</table>";

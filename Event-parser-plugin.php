@@ -142,23 +142,29 @@ function wpdocs_theme_name_scripts() {
 
 function cmp(Event $a, Event $b)
 {
-	return $a->getDate() < $b->getDate();
+	if($a->getDate() == $b->getDate())
+		return 0;
+	return $a->getDate() < $b->getDate() ? -1 : 1;
+	//return $a->getDate() < $b->getDate();
 }
 
 function rcmp(Event $a, Event $b)
 {
-	return $a->getDate() > $b->getDate();
+	if($a->getDate() == $b->getDate())
+		return 0;
+	return $a->getDate() < $b->getDate() ? 1 : -1;
+	//return $a->getDate() > $b->getDate();
 }
 
 function cityCmp(array $a, array $b)
 {
 	if(count($a) > 0 && count($b) > 0){
-		return $a[0]->getDate() < $b[0]->getDate();
+		return $a[0]->getDate() < $b[0]->getDate() ? -1 : 1;
 	}
 	elseif(!$a)
-		return false;
+		return -1;
 	else
-		return true;
+		return 1;
 }
 
 add_action( 'wp_enqueue_scripts', 'wpdocs_theme_name_scripts' );
