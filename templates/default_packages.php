@@ -3,27 +3,10 @@
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
 	$output .= "<form id=\"{$params['id']}\" action=\"{$shost}/mycart/add\" enctype='text/plain'>";
 	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th><th></th></tr>";
-
-	$cities = $parser->getCities();
-	$cityEvents = [];
-	foreach($cities as $city)
-		$cityEvents[$city] = [];
 	/* @var Event $event */
-	foreach($events as $event){
-		$cityEvents[$event->getCity()][] = $event;
-	}
-	foreach($cities as $city)
-		usort($cityEvents[$event->getCity()], 'cmp');
-	uasort($cityEvents, 'cityCmp');
-
-	foreach($cityEvents as $city => $events){
-		if(count($events) > 0){
-			$first_date = $events[0]->getDate();
-			$last_date = end($events)->getDate();
-			$output .= "<tr><td colspan='7'>{$city} ({$first_date} - {$last_date})</td></tr>";
-		}
-		foreach($events as $event)
-		{
+	foreach($events as $event)
+	{
+		if($event->getCategoryByName('Pakiet') != null) {
 			$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
 			$output .= "<td>{$event->getCity()}</td>";
 			$output .= "<td>{$event->getDate()}</td>";
@@ -31,8 +14,25 @@
 			$output .= "<td>{$event->getPrice()} PLN</td>";
 			$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td>";
 			$output .= "<td>";
-			if($event->getUrl())
+			if ( $event->getUrl() ) {
 				$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
+			}
+			$output .= "</td></tr>";
+		}
+	}
+	foreach($events as $event)
+	{
+		if($event->getCategoryByName('Pakiet') == null) {
+			$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
+			$output .= "<td>{$event->getCity()}</td>";
+			$output .= "<td>{$event->getDate()}</td>";
+			$output .= "<td>{$event->getOnHand()}</td>";
+			$output .= "<td>{$event->getPrice()} PLN</td>";
+			$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td>";
+			$output .= "<td>";
+			if ( $event->getUrl() ) {
+				$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
+			}
 			$output .= "</td></tr>";
 		}
 	}
@@ -57,6 +57,7 @@
 	$output .= "<label for='customer_email'>Email</label><input type='text' name='customer_email' required><br>";
 
 	$output .= "<label for='company'>Firma</label><input type='text' name='company'><br>";
+	$output .= "<label for='nip'>Nip</label><input type='text' name='nip'><br>";
 	$output .= "<label for='street'>Ulica</label><input type='text' name='street'><br>";
 	$output .= "<label for='postcode'>Kod pocztowy</label><input type='text' name='postcode'><br>";
 	$output .= "<label for='city'>Miasto</label><input type='text' name='city'></div>";

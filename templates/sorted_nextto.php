@@ -23,6 +23,11 @@
 			$output .= "<tr class=\"event\">";
 			while($i < count($events) && $events[$i]->getDate() == $current_date)
 			{
+				if($event->getCategoryByName('Pakiet') != null)
+				{
+					$i++;
+					continue;
+				}
 				$event = $events[$i];
 				$output .= "<td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong>";
 				$output .= "{$event->getCity()}";

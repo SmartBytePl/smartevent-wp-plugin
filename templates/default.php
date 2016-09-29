@@ -16,12 +16,6 @@
 		if($event->getUrl())
 			$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
 		$output .= "</td></tr>";
-		/*$output .= "<tr class='trainee'><td></td>
-					<td><input type='text' name='name[]' placeholder='Imię'></td>
-					<td><input type='text' name='surname[]' placeholder='Nazwisko'></td>
-					<td><input type='text' name='phone[]' placeholder='Telefon'></td>
-					<td><input type='text' name='email[]' placeholder='Email'></td><td></td><td></td></tr>";
-		*/
 	}
 	$output .= "</table>";
 	$output .= "<h2>Kupon</h2>";
