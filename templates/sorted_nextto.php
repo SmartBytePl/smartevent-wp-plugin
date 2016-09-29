@@ -20,11 +20,11 @@
 		for($i = 0; $i < count($events); $i++)
 		{
 			$current_date = $events[$i]->getDate();
-			$output .= "<tr>";
+			$output .= "<tr class=\"event\">";
 			while($i < count($events) && $events[$i]->getDate() == $current_date)
 			{
 				$event = $events[$i];
-				$output .= "<td class=\"event\"><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong>";
+				$output .= "<td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong>";
 				$output .= "{$event->getCity()}";
 				$output .= "{$event->getDate()}";
 				$output .= "{$event->getOnHand()}";
