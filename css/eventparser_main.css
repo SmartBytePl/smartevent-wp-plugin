@@ -22,3 +22,7 @@ input[type=number]{
 .errors{
     color: red;
 }
+
+.trainees{
+    display: none;
+}

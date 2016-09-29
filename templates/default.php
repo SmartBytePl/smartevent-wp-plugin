@@ -27,6 +27,16 @@
 	$output .= "<h2>Kupon</h2>";
 	$output .= "<input type=\"text\" id=\"coupon\"/><br/>";
 	$output .= "<p id='coupon_result'></p>";
+
+	$output .= "<h2>Lista uczestników</h2>";
+	$output .= "<table class='trainees-table'>";
+	$output .= "<thead><tr><th>Imię</th><th>Nazwisko</th><th>Email</th><th>Telefon</th></tr></thead><tbody>";
+	foreach($events as $event)
+	{
+		$output .= "<tr class='trainees event-{$event->getId()}'><td colspan='4'>{$event->getName()}</td></tr>";
+	}
+	$output .= "</tbody></table>";
+
 	$output .= "<h2><strong>Formularz rejestracyjny<strong></h2>";
 	$output .= "<div class='customer-data'><label for='customer_name'>Imię</label><input type='text' name='customer_name' required><br>";
 	$output .= "<label for='customer_surname'>Nazwisko</label><input type='text' name='customer_surname' required><br>";
