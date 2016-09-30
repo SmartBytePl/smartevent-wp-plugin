@@ -64,6 +64,7 @@
 	$output .= "<label for='customer_email'>Email</label><input type='text' name='customer_email' required><br>";
 
 	$output .= "<label for='company'>Firma</label><input type='text' name='company'><br>";
+	$output .= "<label for='nip'>Nip</label><input type='text' name='nip'><br>";
 	$output .= "<label for='street'>Ulica</label><input type='text' name='street'><br>";
 	$output .= "<label for='postcode'>Kod pocztowy</label><input type='text' name='postcode'><br>";
 	$output .= "<label for='city'>Miasto</label><input type='text' name='city'></div>";
