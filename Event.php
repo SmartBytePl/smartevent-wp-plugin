@@ -14,6 +14,7 @@ class Event
 	private $url;
 	private $address;
 	private $categories;
+	private $masterVariantId;
 
 	public function __construct(array $event) {
 		$this->id = $event['id'];
@@ -25,6 +26,7 @@ class Event
 		$this->onHand = $event['on_hand'];
 		$this->url = isset($event['url']) ? $event['url'] : null;
 		$this->address = isset($event['address']) ? $event['address'] : null;
+		$this->masterVariantId = $event['master_variant_id'];
 		if(array_key_exists("categories", $event)){
 			/* @var Category $category */
 			foreach($event['categories'] as $category) {
@@ -161,5 +163,10 @@ class Event
 			}
 		}
 		return $categories;
+	}
+
+	public function getMasterVariantId()
+	{
+		return $this->masterVariantId;
 	}
 }

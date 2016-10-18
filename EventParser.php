@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Event.php';
+require_once 'Promotion.php';
 
 /**
  * Class EventParser
@@ -10,7 +11,9 @@ class EventParser
 {
     private $raw_array = [];
     private $events_array = [];
+	private $promotions_array = [];
 	private $events = [];
+	private $promotions = [];
     private $supportedLanguages = ['en_US', 'pl_PL'];
     private $host;
 
@@ -25,6 +28,7 @@ class EventParser
     {
         $this->host = $host;
         $this->raw_array = json_decode($this->getEventsJson(), true);
+	    $this->promotions_array = json_decode($this->getPromotionsJson(), true);
         $this->setLanguage($language);
     }
 
@@ -40,6 +44,16 @@ class EventParser
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $server_output = curl_exec($ch);
         return $server_output;
+    }
+
+    public function getPromotionsJson()
+    {
+	    $ch = curl_init();
+	    $url = $this->host."/myapi/promotions.json";
+	    curl_setopt($ch, CURLOPT_URL, $url);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	    $server_output = curl_exec($ch);
+	    return $server_output;
     }
 
     /**
@@ -69,6 +83,8 @@ class EventParser
         }
         foreach($this->events_array as $event)
         	$this->events[] = new Event($event);
+	    foreach($this->promotions_array as $promotion)
+	    	$this->promotions[] = new Promotion($promotion);
     }
 
     /**
@@ -77,6 +93,19 @@ class EventParser
      */
     public function getEvents(){
     	return $this->events;
+    }
+
+    public function getVariants(){
+    	$variants = [];
+    	/* @var Event $event */
+    	foreach($this->events as $event){
+    		$variants[] = $event->getMasterVariantId();
+	    }
+	    return $variants;
+    }
+
+    public function getPromotions(){
+    	return $this->promotions;
     }
 
     public function getCities(){

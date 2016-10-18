@@ -42,6 +42,8 @@ function events_shortcode( $atts ) {
 	else
 		usort($events, "rcmp");
 
+	$promotions = $parser->getPromotions();
+	$variants = $parser->getVariants();
 
 	include("templates/{$params['template']}.php");
 
@@ -51,6 +53,7 @@ function events_shortcode( $atts ) {
 						quantity_change('".$params['id']."');
 						calculate_cost('".$params['id']."');
 						before_submit('".$params['id']."');
+						choose_package('".$params['id']."');
 					});
 				</script>";
 	return $output;
@@ -137,6 +140,7 @@ function wpdocs_theme_name_scripts() {
 	wp_enqueue_script( 'quantity_change', plugin_dir_url( __FILE__ ). '/js/quantity_change.js');
 	wp_enqueue_script( 'calculate_cost', plugin_dir_url( __FILE__ ). '/js/calculate_cost.js');
 	wp_enqueue_script( 'coupon_result', plugin_dir_url( __FILE__ ). '/js/coupon_result.js');
+	wp_enqueue_script( 'choose_package', plugin_dir_url( __FILE__ ). '/js/choose_package.js');
 	wp_enqueue_script( 'js.cookie', plugin_dir_url( __FILE__ ). '/js/js.cookie.js');
 }
 
