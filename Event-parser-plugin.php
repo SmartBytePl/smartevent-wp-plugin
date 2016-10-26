@@ -142,6 +142,7 @@ function wpdocs_theme_name_scripts() {
 	wp_enqueue_script( 'coupon_result', plugin_dir_url( __FILE__ ). '/js/coupon_result.js');
 	wp_enqueue_script( 'choose_package', plugin_dir_url( __FILE__ ). '/js/choose_package.js');
 	wp_enqueue_script( 'js.cookie', plugin_dir_url( __FILE__ ). '/js/js.cookie.js');
+	wp_enqueue_script( 'invite_cookie', plugin_dir_url( __FILE__ ). '/js/invite_cookie.js');
 }
 
 function cmp(Event $a, Event $b)
