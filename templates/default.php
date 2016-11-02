@@ -1,6 +1,4 @@
 <?php
-
-
 	$output .= "<form id=\"{$params['id']}\" action=\"{$shost}/mycart/add\" enctype='text/plain'>";
 
 	$output .= "<h2><strong>Promocje</strong></h2>";
