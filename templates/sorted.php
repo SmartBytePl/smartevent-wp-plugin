@@ -52,9 +52,10 @@
 	$output .= "<h2>Lista uczestników</h2>";
 	$output .= "<table class='trainees-table'>";
 	$output .= "<thead><tr><th>Imię</th><th>Nazwisko</th><th>Email</th><th>Telefon</th></tr></thead><tbody>";
-	foreach($events as $event)
-	{
-		$output .= "<tr class='trainees event-{$event->getId()}'><td colspan='4'>{$event->getName()}</td></tr>";
+	foreach($cityEvents as $city => $events) {
+		foreach ( $events as $event ) {
+			$output .= "<tr class='trainees event-{$event->getId()}'><td colspan='4'>{$event->getName()}</td></tr>";
+		}
 	}
 	$output .= "</tbody></table>";
 
