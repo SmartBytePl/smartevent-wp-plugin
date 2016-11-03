@@ -20,22 +20,25 @@ function events_shortcode( $atts ) {
 		'method' => 'OR',
 		'template' => 'default',
 		'id' => 'form1',
-		'sort' => 'ASC'
+		'sort' => 'ASC',
+		'exclude' => null
 	), $atts );
 
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
 	$categories_name_array = array_filter(explode(',', $params['categories']));
+	$exclude_array = array_filter(explode(',', $params['exclude']));
 
 
 	if(!empty($categories_name_array)){
-		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
+		$parser->findByCategoryName($categories_name_array, $params['method']);
 	}
 	else{
-		$events = $parser->getEvents();
+		$parser->getEvents();
 	}
 
+	$events = $parser->exclude($exclude_array);
 
 	if($params['sort'] == 'ASC')
 		usort($events, "cmp");

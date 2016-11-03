@@ -190,4 +190,13 @@ class EventParser
         $this->events = $events;
         return $events;
     }
+
+    public function exclude(array $excludeArray){
+	    for($i = 0; $i < count($this->events); $i++){
+		    if(in_array($this->events[$i]->getId(), $excludeArray))
+				unset($this->events[$i]);
+	    }
+	    $this->events = array_values($this->events);
+	    return $this->getEvents();
+    }
 }
