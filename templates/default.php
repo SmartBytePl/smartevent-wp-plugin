@@ -2,30 +2,78 @@
 	$output .= "<form id=\"{$params['id']}\" action=\"{$shost}/mycart/add\" enctype='text/plain'>";
 
 	
-	$output .= "<h2><strong>Promocje</strong></h2>";
-	$output .= "<table><tr><th>Nazwa</th><th></th></tr>";
+	$first_in_promotion = [];
 	/* @var Promotion $promotion */
 	foreach($promotions as $promotion){
 		if($promotion->isValid() && $promotion->isAllEventsPresent($variants))
-			$output .= "<tr><td>{$promotion->getName()}</td><td><a href='#' class='promotion_button' id='promotion_button_{$promotion->getId()}' data-variants='{$promotion->getVariantsJson()}'>KUP</a></td></tr>";
+			$first_in_promotion[$promotion->getId()] = false;
+		else
+			$first_in_promotion[$promotion->getId()] = true;
 	}
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
 	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th><th></th></tr>";
 	/* @var Event $event */
 	foreach($events as $event)
 	{
-		$output .= "<tr class=\"event\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" data-variant='{$event->getMasterVariantId()}' name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong></td>";
+		if($event->getArchetype() != 'event')
+			continue;
+		/* @var Promotion $promotion */
+		foreach($promotions as $promotion){
+			if(!$first_in_promotion[$promotion->getId()]){
+				if(in_array($event->getMasterVariantId(), $promotion->getVariants())){
+					$first_in_promotion[$promotion->getId()] = true;
+					$cityName = $parser->getEventByVariant($promotion->getVariants()[0])->getCity();
+					$dates = $parser->getEventDates($promotion->getVariants());
+					sort($dates);
+					$firstDate = $dates[0];
+					$lastDate = end($dates);
+					$ids = $parser->getIdsFromVariants($promotion->getVariants());
+					$output .= "<tr>
+							<td>{$promotion->getName()}</td>
+							<td>$cityName</td>
+							<td>$firstDate - $lastDate</td>
+							<td>{$parser->getMinOnHand($promotion->getVariants())}</td>
+							<td id='promotion_price_{$promotion->getId()}'></td>
+							<td><input type=\"number\" class='promotion_input' id='promotion_input_{$promotion->getId()}' data-variants='{$promotion->getVariantsJson()}'></td>
+						</tr>
+						<script>jQuery(function(){
+							calculate_packet_cost('#promotion_price_{$promotion->getId()}',".json_encode($ids).");
+						});
+						</script>";
+				}
+			}
+		}
+
+		$output .= "<tr class=\"{$event->getArchetype()}\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" data-variant='{$event->getMasterVariantId()}' name=\"id[]\" value=\"{$event->getId()}\" class='{$event->getArchetype()}_checkbox'>{$event->getName()}</strong></td>";
 		$output .= "<td>{$event->getCity()}</td>";
 		$output .= "<td>{$event->getDate()}</td>";
 		$output .= "<td>{$event->getOnHand()}</td>";
 		$output .= "<td>{$event->getPrice()} PLN</td>";
-		$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'></td>";
+		$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}' data-variant='{$event->getMasterVariantId()}'></td>";
 		$output .= "<td>";
 		if($event->getUrl())
 			$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
 		$output .= "</td></tr>";
 	}
 	$output .= "</table>";
+
+	$output .= "<h2><strong>Produkty</strong></h2>";
+	$output .= "<table><tr><th>Nazwa</th><th>Zostało</th><th>Cena</th><th>Ilość</th></tr>";
+	/* @var Event $event */
+	foreach($events as $event)
+	{
+		if($event->getArchetype() != 'bonus')
+			continue;
+
+		$output .= "<tr class=\"{$event->getArchetype()}\"><td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" data-variant='{$event->getMasterVariantId()}' name=\"id[]\" value=\"{$event->getId()}\" class='{$event->getArchetype()}_checkbox'>{$event->getName()}</strong></td>";
+		$output .= "<td>{$event->getOnHand()}</td>";
+		$output .= "<td>{$event->getPrice()} PLN</td>";
+		$output .= "<td><input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}' data-variant='{$event->getMasterVariantId()}'></td>";
+		$output .= "<td>";
+		$output .= "</td></tr>";
+	}
+	$output .= "</table>";
+
 	$output .= "<h2>Kupon</h2>";
 	$output .= "<input type=\"text\" id=\"coupon\"/><br/>";
 	$output .= "<p id='coupon_result'></p>";
@@ -35,7 +83,8 @@
 	$output .= "<thead><tr><th>Imię</th><th>Nazwisko</th><th>Email</th><th>Telefon</th></tr></thead><tbody>";
 	foreach($events as $event)
 	{
-		$output .= "<tr class='trainees event-{$event->getId()}'><td colspan='4'>{$event->getName()}</td></tr>";
+		if($event->getArchetype() == 'event')
+			$output .= "<tr class='trainees event-{$event->getId()}'><td colspan='4'>{$event->getName()}</td></tr>";
 	}
 	$output .= "</tbody></table>";
 

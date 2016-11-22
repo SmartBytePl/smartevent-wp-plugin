@@ -12,6 +12,17 @@ function quantity_change(form_id){
             jQuery(form_id+' #checkbox'+event_id).prop( "checked", false ).trigger("change");
     });
 
+    jQuery(form_id+" input[type=checkbox].bonus_checkbox").on("change", function() {
+        var quantityInput = jQuery(form_id+' #quantity'+this.value);
+        var quantity = quantityInput.val();
+        if(this.checked && !(quantity > 0)) {
+            quantityInput.val(1);
+        }
+        else if(!this.checked) {
+            quantityInput.val(0);
+        }
+    });
+
     jQuery(form_id+" input[type=checkbox].event_checkbox").on("change", function(){
         if (jQuery(form_id+" input:checkbox.event_checkbox:checked").length > 0){
             jQuery(form_id+" #submit_button").attr("disabled", false);

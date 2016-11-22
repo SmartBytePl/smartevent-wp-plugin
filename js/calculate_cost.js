@@ -35,3 +35,27 @@ function calculate_cost(form_id) {
        });
     });
 }
+
+function calculate_packet_cost(packet_cost_td, ids){
+    var url =  window.backend_host + "/mycart/calculate?";
+    for(var i = 0; i < ids.length; i++){
+        if(i > 0){
+            url += "&";
+        }
+        url = url + 'id[]='+ids[i]+'&quantity[]=1';
+    }
+    jQuery.ajax({
+        url: url,
+        crossDomain: true,
+        dataType: 'jsonp',
+        success: function( result ) {
+            result /= 100;
+            result /= 1.23;
+            console.log(result);
+            jQuery(packet_cost_td).html(result);
+        },
+        error: function (request, error) {
+            console.log(" Can't do because: " + error);
+        }
+    });
+}

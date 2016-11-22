@@ -11,8 +11,10 @@ class EventParser
 {
     private $raw_array = [];
     private $events_array = [];
+	private $bonuses_array = [];
 	private $promotions_array = [];
 	private $events = [];
+	private $bonuses = [];
 	private $promotions = [];
     private $supportedLanguages = ['en_US', 'pl_PL'];
     private $host;
@@ -28,6 +30,7 @@ class EventParser
     {
         $this->host = $host;
         $this->raw_array = json_decode($this->getEventsJson(), true);
+	    $this->bonuses_array = json_decode($this->getBonusesJson(), true);
 	    $this->promotions_array = json_decode($this->getPromotionsJson(), true);
         $this->setLanguage($language);
     }
@@ -39,12 +42,22 @@ class EventParser
     private function getEventsJson()
     {
         $ch = curl_init();
-        $url = $this->host."/myapi/events.json";
+        $url = $this->host."/myapi/training.json";
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $server_output = curl_exec($ch);
         return $server_output;
     }
+
+	private function getBonusesJson()
+	{
+		$ch = curl_init();
+		$url = $this->host."/myapi/bonus.json";
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$server_output = curl_exec($ch);
+		return $server_output;
+	}
 
     public function getPromotionsJson()
     {
@@ -66,7 +79,7 @@ class EventParser
         if(!in_array($language, $this->supportedLanguages))
             throw new Exception("Language '$language' is not supported");
         $this->events_array = $this->raw_array;
-        for($i = 0; $i < count($this->events_array); $i++){
+        /*for($i = 0; $i < count($this->events_array); $i++){
         	if(array_key_exists("categories", $this->events_array[$i])){
 		        for ($j = 0; $j < count($this->events_array[$i]['categories']); $j++){
 			        $this->events_array[$i]['categories'][$j]['name'] = $this->events_array[$i]['categories'][$j]['translations'][$language];
@@ -80,9 +93,13 @@ class EventParser
                 $this->events_array[$i][$param] = $this->events_array[$i]['translations'][$language][$param];
             }
             unset($this->events_array[$i]['translations']);
-        }
+        }*/
+        $this->simplifyTranslations($this->events_array, $language);
+	    $this->simplifyTranslations($this->bonuses_array, $language);
         foreach($this->events_array as $event)
-        	$this->events[] = new Event($event);
+        	$this->events[] = new Event($event, 'event');
+	    foreach($this->bonuses_array as $bonus)
+	    	$this->events[] = new Event($bonus, 'bonus');
 	    foreach($this->promotions_array as $promotion)
 	    	$this->promotions[] = new Promotion($promotion);
     }
@@ -93,6 +110,10 @@ class EventParser
      */
     public function getEvents(){
     	return $this->events;
+    }
+
+    public function getBonuses(){
+	    return $this->bonuses;
     }
 
     public function getVariants(){
@@ -117,17 +138,28 @@ class EventParser
 	    return array_unique($cities);
     }
 
-    /**
-     * Get array of dates when events take place
-     * @return array
-     */
-    public function getEventDates(){
+	/**
+	 * Get array of dates when events take place
+	 *
+	 * @param null $variants
+	 *
+	 * @return array
+	 */
+    public function getEventDates($variants = null){
         $dates = [];
-	    /* @var Event $event */
-        foreach ($this->events as $event)
-        {
-            $dates[] = $event->getDate();
-        }
+	    if($variants){
+		    foreach ($variants as $variant)
+		    {
+			    $dates[] = $this->getEventByVariant($variant)->getDate();
+		    }
+	    }
+	    else{
+		    /* @var Event $event */
+		    foreach ($this->events as $event)
+		    {
+			    $dates[] = $event->getDate();
+		    }
+	    }
         return array_values(array_unique($dates));
     }
 
@@ -198,5 +230,59 @@ class EventParser
 	    }
 	    $this->events = array_values($this->events);
 	    return $this->getEvents();
+    }
+
+    public function getEventById($id){
+	    /* @var Event $event */
+	    foreach ($this->events as $event){
+		    if($event->getId() == $id){
+			    return $event;
+		    }
+	    }
+	    return null;
+    }
+
+	public function getEventByVariant($variant){
+		/* @var Event $event */
+		foreach ($this->events as $event){
+			if($event->getMasterVariantId() == $variant){
+				return $event;
+			}
+		}
+		return null;
+	}
+
+	public function getMinOnHand($variants){
+		$onHand = 10000;
+		foreach ($variants as $variant){
+			$onHand = min($this->getEventByVariant($variant)->getOnHand(), $onHand);
+		}
+		return $onHand;
+	}
+
+	public function getIdsFromVariants($variants){
+		$ids = [];
+		foreach($variants as $variant){
+			$ids[] = $this->getEventByVariant($variant)->getId();
+		}
+		return $ids;
+	}
+    
+    private function simplifyTranslations(&$array, $language){
+	    for($i = 0; $i < count($array); $i++){
+		    if(array_key_exists("categories", $array[$i])){
+			    for ($j = 0; $j < count($array[$i]['categories']); $j++){
+				    $array[$i]['categories'][$j]['name'] = $array[$i]['categories'][$j]['translations'][$language];
+				    unset($array[$i]['categories'][$j]['translations']);
+				    $array[$i]['categories'][$j]['parent']['name'] = $array[$i]['categories'][$j]['parent']['translations'][$language];
+				    unset($array[$i]['categories'][$j]['parent']['translations']);
+			    }
+		    }
+		    $translations_params = ['name', 'description'];
+		    foreach ($translations_params as $param){
+			    $array[$i][$param] = $array[$i]['translations'][$language][$param];
+		    }
+		    unset($array[$i]['translations']);
+	    }
     }
 }

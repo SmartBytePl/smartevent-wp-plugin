@@ -15,8 +15,9 @@ class Event
 	private $address;
 	private $categories;
 	private $masterVariantId;
+	private $archetype;
 
-	public function __construct(array $event) {
+	public function __construct(array $event, $archetype) {
 		$this->id = $event['id'];
 		$this->isEnabled = $event['enabled'];
 		$this->date = substr($event['available_until'],0,10);
@@ -27,6 +28,7 @@ class Event
 		$this->url = isset($event['url']) ? $event['url'] : null;
 		$this->address = isset($event['address']) ? $event['address'] : null;
 		$this->masterVariantId = $event['master_variant_id'];
+		$this->archetype = $archetype;
 		if(array_key_exists("categories", $event)){
 			/* @var Category $category */
 			foreach($event['categories'] as $category) {
@@ -38,6 +40,10 @@ class Event
 
 	public function getId(){
 		return $this->id;
+	}
+
+	public function getArchetype(){
+		return $this->archetype;
 	}
 
 	public function IsEnabled(){
