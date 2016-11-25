@@ -29,7 +29,7 @@
 					$lastDate = end($dates);
 					$ids = $parser->getIdsFromVariants($promotion->getVariants());
 					$output .= "<tr>
-							<td>{$promotion->getName()}</td>
+							<td><input type=\"checkbox\" id=\"checkbox_promotion_{$event->getId()}\" data-promotion='{$promotion->getId()}' class='promotion_checkbox'>{$promotion->getName()}</td>
 							<td>$cityName</td>
 							<td>$firstDate - $lastDate</td>
 							<td>{$parser->getMinOnHand($promotion->getVariants())}</td>

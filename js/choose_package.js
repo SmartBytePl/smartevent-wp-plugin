@@ -1,5 +1,21 @@
 function choose_package(form_id) {
     form_id = '#'+form_id;
+
+    jQuery(form_id+" .promotion_checkbox").on('change', function(){
+        var promotion_id = jQuery(this).data('promotion');
+        console.log(promotion_id);
+        console.log(this.checked);
+        var promotion_input = jQuery(form_id+" #promotion_input_"+promotion_id);
+        if(this.checked){
+            console.log(promotion_input);
+            promotion_input.val(1).change();
+        }
+        else{
+            promotion_input.val(0).change();
+        }
+
+    });
+
     jQuery(form_id+" .promotion_input").on('change', function(event){
         event.preventDefault();
        //console.log(jQuery(this).data('variants'));
