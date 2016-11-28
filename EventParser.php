@@ -160,24 +160,31 @@ class EventParser
 			    $dates[] = $event->getDate();
 		    }
 	    }
-        return array_values(array_unique($dates));
+	    $dates = array_values(array_unique($dates));
+	    sort($dates);
+        return $dates;
     }
 
-    public function getFirstAndLastDate(DateTime $date, $which = 'first')
+    public function getFirstAndLastDate($which = 'first')
     {
-    	$year_month = $date->format('Y-m');
 	    $dates = $this->getEventDates();
 	    $passed = [];
+	    $first_date = null;
+	    $last_date = null;
 	    foreach($dates as $d)
 	    {
-	    	if(substr($d,0,7) == $year_month)
-	    		$passed[] = $d;
+	    	$date = new \DateTime($d);
+	    	if(!$passed){
+	    		$first_date = $date;
+	    		$last_date = clone $first_date;
+	    		$last_date->modify('+30 days');
+		    }
+		    if($date <= $last_date)
+		        $passed[] = $date;
 	    }
-	    sort($passed);
-	    $first = count($passed) > 0 ? $passed[0] : null;
 	    $last = count($passed) > 0 ? $passed[count($passed) - 1] : null;
 	    if($which == 'first')
-	    	return $first;
+	    	return $first_date;
 	    else
 	    	return $last;
     }

@@ -109,6 +109,7 @@ function event_range_date_shortcode($atts){
 	$parser = new EventParser($shost, 'pl_PL');
 
 	$categories_name_array = array_filter(explode(',', $params['categories']));
+	$exclude_array = array_filter(explode(',', $params['exclude']));
 
 
 	if(!empty($categories_name_array)){
@@ -118,7 +119,30 @@ function event_range_date_shortcode($atts){
 		$parser->getEvents();
 	}
 
-	return $parser->getFirstAndLastDate(new DateTime(), $params['which']);
+	$parser->exclude($exclude_array);
+
+	/* @var DateTime $date */
+	$date = $parser->getFirstAndLastDate($params['which']);
+
+	$miesiac_pl = array(
+		'01' => 'stycznia',
+		'02' => 'luty',
+		'03' => 'marca',
+		'04' => 'kwietnia',
+		'05' => 'maja',
+		'06' => 'czerwca',
+		'07' => 'lipca',
+		'08' => 'sierpnia',
+		'09' => 'września',
+		'10' => 'października',
+		'11' => 'listopada',
+		'12' => 'grudnia'
+	);
+
+	if($date){
+		return $date->format('d').' '.$miesiac_pl[$date->format('m')];
+	}
+	return null;
 }
 
 
