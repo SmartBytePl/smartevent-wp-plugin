@@ -2,7 +2,7 @@ function calculate_cost(form_id) {
     form_id = '#'+form_id;
     jQuery("input[type=checkbox], input[type=number], #coupon").on("change", function () {
       var url = "";
-      jQuery(form_id+' input[type=checkbox]').each(function () {
+      jQuery(form_id+' .event_checkbox, '+form_id+' .bonus_checkbox').each(function () {
          if (this.checked) {
              var quantity = jQuery(form_id+' #quantity'+this.value).val();
              if(url)

@@ -47,7 +47,7 @@
 						$firstDate = $dates[0];
 						$lastDate = end($dates);
 						$ids = $parser->getIdsFromVariants($promotion->getVariants());
-						$output .= "<tr>
+						$output .= "<tr class=\"packet\">
 							<td><input type=\"checkbox\" id=\"checkbox_promotion_{$event->getId()}\" data-promotion='{$promotion->getId()}' class='promotion_checkbox'>{$promotion->getName()}</td>
 							<td>$cityName</td>
 							<td>$firstDate - $lastDate</td>
