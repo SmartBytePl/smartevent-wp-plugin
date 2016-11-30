@@ -1,16 +1,8 @@
 <?php
 	$output .= "<form id=\"{$params['id']}\" action=\"{$shost}/mycart/add\" enctype='text/plain'>";
 
-	$output .= "<h2><strong>Promocje</strong></h2>";
-	$output .= "<table><tr><th>Nazwa</th><th></th></tr>";
-	/* @var Promotion $promotion */
-	foreach($promotions as $promotion){
-		if($promotion->isValid() && $promotion->isAllEventsPresent($variants))
-			$output .= "<tr><td>{$promotion->getName()}</td><td><a href='#' class='promotion_button' id='promotion_button_{$promotion->getId()}' data-variants='{$promotion->getVariantsJson()}'>KUP</a></td></tr>";
-	}
-
 	$output .= "<h2><strong>Kalendarium szkoleń</strong></h2>";
-	$output .= "<table><tr><th>Nazwa</th><th>Miasto</th><th>Dostępne do</th><th>Zostało</th><th>Cena</th><th>Ilość</th><th></th></tr>";
+	$output .= "<table>";
 
 	$cities = $parser->getCities();
 	$cityEvents = [];
@@ -31,23 +23,19 @@
 			$output .= "<tr class=\"event\">";
 			while($i < count($events) && $events[$i]->getDate() == $current_date)
 			{
-				if($event->getCategoryByName('Pakiet') != null)
-				{
-					$i++;
-					continue;
-				}
 				$event = $events[$i];
-				$output .= "<td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" name=\"id[]\" value=\"{$event->getId()}\" class='event_checkbox'>{$event->getName()}</strong>";
+				$output .= "<td><input type=\"checkbox\" id=\"checkbox{$event->getId()}\" data-variant='{$event->getMasterVariantId()}' name=\"id[]\" value=\"{$event->getId()}\" class='{$event->getArchetype()}_checkbox'>{$event->getName()}</strong>";
 				$output .= "{$event->getCity()}";
 				$output .= "{$event->getDate()}";
 				$output .= "{$event->getOnHand()}";
 				$output .= "{$event->getPrice()} PLN";
-				$output .= "<input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}'>";
+				$output .= "<input type=\"number\" id=\"quantity{$event->getId()}\" data-eventid='{$event->getId()}' data-variant='{$event->getMasterVariantId()}'>";
 				if($event->getUrl())
 					$output .= "<a href=\"{$event->getUrl()}\">Więcej</a>";
 				$output .= "</td>";
 				$i++;
 			}
+			$i--;
 			$output .= "</tr>";
 		}
 	}
