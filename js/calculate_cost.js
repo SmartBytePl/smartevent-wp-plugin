@@ -51,8 +51,7 @@ function calculate_packet_cost(packet_cost_td, ids){
         success: function( result ) {
             result /= 100;
             result /= 1.23;
-            console.log(result);
-            jQuery(packet_cost_td).html(result);
+            jQuery(packet_cost_td).html(result.toFixed(0));
         },
         error: function (request, error) {
             console.log(" Can't do because: " + error);
