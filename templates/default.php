@@ -5,7 +5,7 @@
 	$first_in_promotion = [];
 	/* @var Promotion $promotion */
 	foreach($promotions as $promotion){
-		if($promotion->isValid() && $promotion->isAllEventsPresent($variants))
+		if($promotion->isValid() && $promotion->isAllEventsPresent($variants) && !in_array($promotion->getId(),[32,33]))
 			$first_in_promotion[$promotion->getId()] = false;
 		else
 			$first_in_promotion[$promotion->getId()] = true;
@@ -75,7 +75,7 @@
 	$output .= "</table>";
 
 	$output .= "<h2>Kupon</h2>";
-	$output .= "<input type=\"text\" id=\"coupon\"/><br/>";
+	$output .= "<input type=\"text\" name=\"coupon\" id=\"coupon\"/><br/>";
 	$output .= "<p id='coupon_result'></p>";
 
 	$output .= "<h2>Lista uczestników</h2>";
