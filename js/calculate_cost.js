@@ -26,8 +26,16 @@ function calculate_cost(form_id) {
            crossDomain: true,
            dataType: 'jsonp',
            success: function( result ) {
-               result /= 100;
-               jQuery(form_id+' #invoice_cost').html(result);
+               var total = result.total;
+               var promotion_values = result.promotions;
+               total /= 100;
+               promotion_values /= -100;
+               jQuery(form_id+' #invoice_cost').html(total);
+               if(promotion_values > 0)
+                    jQuery(form_id+' #promotion-values').html("("+promotion_values+" zł rabatu)");
+               else
+                    jQuery(form_id+' #promotion-values').html("");
+
            },
            error: function (request, error) {
                console.log(" Can't do because: " + error);
@@ -49,6 +57,7 @@ function calculate_packet_cost(packet_cost_td, ids){
         crossDomain: true,
         dataType: 'jsonp',
         success: function( result ) {
+            result = result.total;
             result /= 100;
             result /= 1.23;
             jQuery(packet_cost_td).html(result.toFixed(0));
