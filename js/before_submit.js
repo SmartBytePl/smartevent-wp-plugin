@@ -12,11 +12,11 @@ function before_submit(form_id) {
                 }).appendTo(form_id);
             }
         });
-        jQuery('<input>', {
+        /*jQuery('<input>', {
             type: 'hidden',
             name: 'invite',
-            value: Cookies.get('invite')
-        }).appendTo(form_id);
+            value: JSON.parse(Cookies.get('invite')).first()
+        }).appendTo(form_id);*/
         return true;
     });
 }

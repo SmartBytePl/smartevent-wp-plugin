@@ -98,7 +98,8 @@
 	$output .= "<label for='nip'>Nip</label><input type='text' name='nip'><br>";
 	$output .= "<label for='street'>Ulica</label><input type='text' name='street'><br>";
 	$output .= "<label for='postcode'>Kod pocztowy</label><input type='text' name='postcode'><br>";
-	$output .= "<label for='city'>Miasto</label><input type='text' name='city'></div>";
+	$output .= "<label for='city'>Miasto</label><input type='text' name='city'><br>";
+	$output .= "<span><label for='invite'>Polecenie</label><select name='invite' id='invite_select'></select></span></div>";
 
 	$output .= "<label for='additional_info'>Dodatkowe informacje</label><textarea name='additional_info' ></textarea><br/>";
 	$output .= "<input type=\"checkbox\" required/>Akceptuję regulamin<br/>";
