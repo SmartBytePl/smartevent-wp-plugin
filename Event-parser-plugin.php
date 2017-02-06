@@ -27,7 +27,7 @@ function events_shortcode( $atts ) {
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$categories_name_array = array_filter(explode(',', $params['categories']));
+	$categories_name_array = array_filter(array_map('trim', explode(',', $params['categories'])));
 	$exclude_array = array_filter(explode(',', $params['exclude']));
 
 
@@ -76,8 +76,7 @@ function event_date_shortcode( $atts ) {
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$categories_name_array = array_filter(explode(',', $params['categories']));
-
+	$categories_name_array = array_filter(array_map('trim', explode(',', $params['categories'])));
 
 	if(!empty($categories_name_array)){
 		$events = $parser->findByCategoryName($categories_name_array, $params['method']);
@@ -108,7 +107,7 @@ function event_range_date_shortcode($atts){
 	$shost = get_option('eventparser_shost');
 	$parser = new EventParser($shost, 'pl_PL');
 
-	$categories_name_array = array_filter(explode(',', $params['categories']));
+	$categories_name_array = array_filter(array_map('trim', explode(',', $params['categories'])));
 	$exclude_array = array_filter(explode(',', $params['exclude']));
 
 
