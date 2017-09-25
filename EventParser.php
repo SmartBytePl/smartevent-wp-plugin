@@ -277,6 +277,7 @@ class EventParser
     
     private function simplifyTranslations(&$array, $language){
 	    for($i = 0; $i < count($array); $i++){
+		    if (!is_array($array[$i])) continue;
 		    if(array_key_exists("categories", $array[$i])){
 			    for ($j = 0; $j < count($array[$i]['categories']); $j++){
 				    $array[$i]['categories'][$j]['name'] = $array[$i]['categories'][$j]['translations'][$language];
